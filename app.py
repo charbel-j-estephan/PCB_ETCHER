@@ -7,6 +7,8 @@ import re
 
 app = Flask(__name__)
 
+last_gcode = ""  # Store last gcode for debugging
+
 
 def gcode_to_custom(gcode_text):
     lines = gcode_text.splitlines()
@@ -21,13 +23,11 @@ def gcode_to_custom(gcode_text):
         if not line or line.startswith("(") or line.startswith("%"):
             continue
 
-        # Extract Z changes anywhere in the line
         z_match = re.search(r"Z([-\d.]+)", line)
         if z_match:
             z_val = float(z_match.group(1))
             pen_down = z_val < 0
 
-        # Extract X Y coordinates from ANY line that has them
         x_match = re.search(r"X([-\d.]+)", line)
         y_match = re.search(r"Y([-\d.]+)", line)
 
@@ -36,7 +36,6 @@ def gcode_to_custom(gcode_text):
         if y_match:
             current_y = float(y_match.group(1)) * INCH_TO_MM
 
-        # Only emit a command if this line has X or Y movement
         if x_match or y_match:
             x_steps = int(round(current_x * 10))
             y_steps = int(round(current_y * 10))
@@ -50,6 +49,7 @@ def gcode_to_custom(gcode_text):
 
 @app.route("/convert", methods=["POST"])
 def convert():
+    global last_gcode
     if "gerber" not in request.files:
         return jsonify({"error": "No gerber file provided"}), 400
 
@@ -91,12 +91,14 @@ def convert():
                 break
 
         if not gcode_path:
+            last_gcode = f"NO FILE FOUND\nstdout:{result.stdout}\nstderr:{result.stderr}\nfiles:{os.listdir(tmpdir)}"
             return (
                 jsonify(
                     {
                         "error": "Conversion failed",
                         "stdout": result.stdout,
                         "stderr": result.stderr,
+                        "files": os.listdir(tmpdir),
                     }
                 ),
                 500,
@@ -105,15 +107,16 @@ def convert():
         with open(gcode_path, "r") as f:
             gcode_text = f.read()
 
+        last_gcode = gcode_text  # Save for debug
+
         custom_format = gcode_to_custom(gcode_text)
 
-        # Debug: return raw gcode if custom is empty
         if not custom_format.strip():
             return (
                 jsonify(
                     {
                         "error": "Parser produced no output",
-                        "raw_gcode_sample": gcode_text[:2000],
+                        "raw_gcode_sample": gcode_text[:3000],
                     }
                 ),
                 500,
@@ -136,6 +139,11 @@ def convert():
         return jsonify({"error": str(e)}), 500
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
+
+
+@app.route("/debug", methods=["GET"])
+def debug():
+    return f"<pre>{last_gcode[:5000]}</pre>", 200, {"Content-Type": "text/html"}
 
 
 @app.route("/health", methods=["GET"])
