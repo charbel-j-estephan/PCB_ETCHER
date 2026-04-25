@@ -1,4 +1,4 @@
-# DIY PCB Plotter & CNC Machine
+# PCB ETCHER
 
 A high-precision automated system designed to convert Gerber files into physical PCB layouts using a **PIC16F877A** for motion control and an **ESP32** for cloud-based file management.
 
