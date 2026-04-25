@@ -1,0 +1,2039 @@
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001     #INCLUDE "P16F877A.INC"
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00566         LIST
+2007   3F32           00002     __CONFIG _CP_OFF & _WDT_OFF & _PWRTE_ON & _BODEN_OFF & _LVP_OFF & _HS_OSC
+  00000190            00003 STEPS_PER_MM    EQU D'400'
+                      00004 
+                      00005 
+  00000021            00006 REG1        EQU 0x21
+  00000022            00007 REG2        EQU 0x22
+  00000023            00008 REG3        EQU 0x23
+                      00009 
+  00000024            00010 RXBYTE      EQU 0x24
+  00000025            00011 ENDFLAG     EQU 0x25
+                      00012 
+                      00013 
+                      00014 
+  00000030            00015 BUF         EQU 0x30
+                      00016 
+                      00017 
+  0000003E            00018 X5          EQU 0x3E
+  0000003F            00019 X4          EQU 0x3F
+  00000040            00020 X3          EQU 0x40
+  00000041            00021 X2          EQU 0x41
+  00000042            00022 X1          EQU 0x42
+  00000043            00023 X0          EQU 0x43
+  00000044            00024 Y5          EQU 0x44
+  00000045            00025 Y4          EQU 0x45
+  00000046            00026 Y3          EQU 0x46
+  00000047            00027 Y2          EQU 0x47
+  00000048            00028 Y1          EQU 0x48
+  00000049            00029 Y0          EQU 0x49
+  0000004A            00030 PENVAL      EQU 0x4A
+                      00031 
+                      00032 
+  00000050            00033 XTGT_HI     EQU 0x50
+  00000051            00034 XTGT_MD     EQU 0x51
+  00000052            00035 XTGT_LO     EQU 0x52
+  00000053            00036 YTGT_HI     EQU 0x53
+  00000054            00037 YTGT_MD     EQU 0x54
+  00000055            00038 YTGT_LO     EQU 0x55
+                      00039 
+                      00040 
+  00000056            00041 XCUR_HI     EQU 0x56
+  00000057            00042 XCUR_MD     EQU 0x57
+  00000058            00043 XCUR_LO     EQU 0x58
+  00000059            00044 YCUR_HI     EQU 0x59
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  0000005A            00045 YCUR_MD     EQU 0x5A
+  0000005B            00046 YCUR_LO     EQU 0x5B
+                      00047 
+  0000005C            00048 DX_HI       EQU 0x5C
+  0000005D            00049 DX_MD       EQU 0x5D
+  0000005E            00050 DX_LO       EQU 0x5E
+  0000005F            00051 DY_HI       EQU 0x5F
+  00000060            00052 DY_MD       EQU 0x60
+  00000061            00053 DY_LO       EQU 0x61
+  00000062            00054 BERR_HI     EQU 0x62
+  00000063            00055 BERR_MD     EQU 0x63
+  00000064            00056 BERR_LO     EQU 0x64
+  00000065            00057 STEPX_HI    EQU 0x65
+  00000066            00058 STEPX_MD    EQU 0x66
+  00000067            00059 STEPX_LO    EQU 0x67
+  00000068            00060 XDIR_F      EQU 0x68
+  00000069            00061 YDIR_F      EQU 0x69
+  0000006A            00062 DOM_FLAG    EQU 0x6A
+                      00063 
+  0000006B            00064 TMPH        EQU 0x6B
+  0000006C            00065 TMPL        EQU 0x6C
+  0000006D            00066 TMP2H       EQU 0x6D
+  0000006E            00067 TMP2L       EQU 0x6E
+  0000006F            00068 TMP3        EQU 0x6F
+                      00069 
+                      00070 
+  00000070            00071 MULX        EQU 0x70
+  00000071            00072 MULH        EQU 0x71
+  00000072            00073 MULL        EQU 0x72
+                      00074 
+                      00075 
+  00000073            00076 MUL_A       EQU 0x73
+  00000074            00077 MUL_B_HI    EQU 0x74
+  00000075            00078 MUL_B_LO    EQU 0x75
+  00000076            00079 RES_HI      EQU 0x76
+  00000077            00080 RES_LO      EQU 0x77
+  00000078            00081 MUL_CNT     EQU 0x78
+                      00082 
+  00000079            00083 DLY1        EQU 0x79
+  0000007A            00084 DLY2        EQU 0x7A
+  0000007B            00085 DLY3        EQU 0x7B
+                      00086 
+                      00087 #DEFINE X_STEP  PORTB,0
+                      00088 #DEFINE X_DIR   PORTB,1
+                      00089 #DEFINE Y_STEP  PORTB,2
+                      00090 #DEFINE Y_DIR   PORTB,3
+                      00091 #DEFINE SERVO   PORTB,4
+                      00092 #DEFINE LIM_X   PORTA,2
+                      00093 #DEFINE LIM_Y   PORTA,3
+                      00094 
+0000                  00095     ORG 0x00
+0000   2801           00096     GOTO    INIT
+                      00097 
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0001                  00098 INIT
+0001   1683           00099     BSF     STATUS,RP0
+0002   3081           00100     MOVLW   0x81
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003   0087           00101     MOVWF   TRISC
+0004   3024           00102     MOVLW   B'00100100'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005   0098           00103     MOVWF   TXSTA
+0006   3019           00104     MOVLW   D'25'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0007   0099           00105     MOVWF   SPBRG
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0008   0188           00106     CLRF    TRISD
+0009   3006           00107     MOVLW   0x06
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000A   009F           00108     MOVWF   ADCON1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   0189           00109     CLRF    TRISE
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000C   0186           00110     CLRF    TRISB
+000D   300C           00111     MOVLW   B'00001100'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000E   0085           00112     MOVWF   TRISA
+000F   1283           00113     BCF     STATUS,RP0
+0010   3007           00114     MOVLW   0x07
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0011   009C           00115     MOVWF   CMCON
+0012   0189           00116     CLRF    PORTE
+0013   0188           00117     CLRF    PORTD
+0014   3090           00118     MOVLW   B'10010000'
+0015   0098           00119     MOVWF   RCSTA
+0016   0186           00120     CLRF    PORTB
+0017   0185           00121     CLRF    PORTA
+0018   01A5           00122     CLRF    ENDFLAG
+0019   01CA           00123     CLRF    PENVAL
+001A   01D6           00124     CLRF    XCUR_HI
+001B   01D7           00125     CLRF    XCUR_MD
+001C   01D8           00126     CLRF    XCUR_LO
+001D   01D9           00127     CLRF    YCUR_HI
+001E   01DA           00128     CLRF    YCUR_MD
+001F   01DB           00129     CLRF    YCUR_LO
+0020   1A8C           00130     BTFSC   PIR1,RCIF
+0021   081A           00131     MOVF    RCREG,W
+0022   1A8C           00132     BTFSC   PIR1,RCIF
+0023   081A           00133     MOVF    RCREG,W
+0024   128C           00134     BCF     PIR1,RCIF
+0025   2389           00135     CALL    CONFILCD
+                      00136 
+0026   2050           00137     CALL    HOME_AXES
+                      00138     ; Display "MACHINE READY"
+0027   3001           00139     MOVLW   H'01'
+0028   235D           00140     CALL    COMMAND
+0029   23A0           00141     CALL    DELAY20MS
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+002A   3084           00142     MOVLW   H'84'
+002B   235D           00143     CALL    COMMAND
+002C   304D           00144     MOVLW   A'M'
+002D   2373           00145     CALL    CHAR
+002E   3041           00146     MOVLW   A'A'
+002F   2373           00147     CALL    CHAR
+0030   3043           00148     MOVLW   A'C'
+0031   2373           00149     CALL    CHAR
+0032   3048           00150     MOVLW   A'H'
+0033   2373           00151     CALL    CHAR
+0034   3049           00152     MOVLW   A'I'
+0035   2373           00153     CALL    CHAR
+0036   304E           00154     MOVLW   A'N'
+0037   2373           00155     CALL    CHAR
+0038   3045           00156     MOVLW   A'E'
+0039   2373           00157     CALL    CHAR
+003A   30C5           00158     MOVLW   H'C5'
+003B   235D           00159     CALL    COMMAND
+003C   3052           00160     MOVLW   A'R'
+003D   2373           00161     CALL    CHAR
+003E   3045           00162     MOVLW   A'E'
+003F   2373           00163     CALL    CHAR
+0040   3041           00164     MOVLW   A'A'
+0041   2373           00165     CALL    CHAR
+0042   3044           00166     MOVLW   A'D'
+0043   2373           00167     CALL    CHAR
+0044   3059           00168     MOVLW   A'Y'
+0045   2373           00169     CALL    CHAR
+                      00170 
+0046                  00171 MAIN
+0046   208D           00172     CALL    RECEIVE_LINE
+0047   1825           00173     BTFSC   ENDFLAG,0
+0048   2B44           00174     GOTO    PLOT_DONE
+0049   3001           00175     MOVLW   H'01'
+004A   235D           00176     CALL    COMMAND
+004B   23A0           00177     CALL    DELAY20MS
+004C   20BC           00178     CALL    PARSE_AND_DISPLAY
+004D   2182           00179     CALL    EXECUTE_MOTION
+004E   233F           00180     CALL    SEND_ACK
+004F   2846           00181     GOTO    MAIN
+                      00182 
+0050                  00183 HOME_AXES
+0050   3001           00184     MOVLW   H'01'
+0051   235D           00185     CALL    COMMAND
+0052   3080           00186     MOVLW   H'80'
+0053   235D           00187     CALL    COMMAND
+0054   3048           00188     MOVLW   A'H'
+0055   2373           00189     CALL    CHAR
+0056   304F           00190     MOVLW   A'O'
+0057   2373           00191     CALL    CHAR
+0058   304D           00192     MOVLW   A'M'
+0059   2373           00193     CALL    CHAR
+005A   3049           00194     MOVLW   A'I'
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+005B   2373           00195     CALL    CHAR
+005C   304E           00196     MOVLW   A'N'
+005D   2373           00197     CALL    CHAR
+005E   3047           00198     MOVLW   A'G'
+005F   2373           00199     CALL    CHAR
+0060   302E           00200     MOVLW   A'.'
+0061   2373           00201     CALL    CHAR
+0062   302E           00202     MOVLW   A'.'
+0063   2373           00203     CALL    CHAR
+0064   302E           00204     MOVLW   A'.'
+0065   2373           00205     CALL    CHAR
+0066   30C0           00206     MOVLW   H'C0'
+0067   235D           00207     CALL    COMMAND
+0068   3059           00208     MOVLW   A'Y'
+0069   2373           00209     CALL    CHAR
+006A   302E           00210     MOVLW   A'.'
+006B   2373           00211     CALL    CHAR
+006C   302E           00212     MOVLW   A'.'
+006D   2373           00213     CALL    CHAR
+006E   1186           00214     BCF     Y_DIR
+006F                  00215 HOME_Y_LOOP
+006F   1D85           00216     BTFSS   LIM_Y
+0070   2876           00217     GOTO    HOME_Y_DONE
+0071   1506           00218     BSF     Y_STEP
+0072   2334           00219     CALL    HOME_DELAY
+0073   1106           00220     BCF     Y_STEP
+0074   2334           00221     CALL    HOME_DELAY
+0075   286F           00222     GOTO    HOME_Y_LOOP
+0076                  00223 HOME_Y_DONE
+0076   01D9           00224     CLRF    YCUR_HI
+0077   01DA           00225     CLRF    YCUR_MD
+0078   01DB           00226     CLRF    YCUR_LO
+0079   30C0           00227     MOVLW   H'C0'
+007A   235D           00228     CALL    COMMAND
+007B   3058           00229     MOVLW   A'X'
+007C   2373           00230     CALL    CHAR
+007D   302E           00231     MOVLW   A'.'
+007E   2373           00232     CALL    CHAR
+007F   302E           00233     MOVLW   A'.'
+0080   2373           00234     CALL    CHAR
+0081   1486           00235     BSF     X_DIR
+0082                  00236 HOME_X_LOOP
+0082   1D05           00237     BTFSS   LIM_X
+0083   2889           00238     GOTO    HOME_X_DONE
+0084   1406           00239     BSF     X_STEP
+0085   2334           00240     CALL    HOME_DELAY
+0086   1006           00241     BCF     X_STEP
+0087   2334           00242     CALL    HOME_DELAY
+0088   2882           00243     GOTO    HOME_X_LOOP
+0089                  00244 HOME_X_DONE
+0089   01D6           00245     CLRF    XCUR_HI
+008A   01D7           00246     CLRF    XCUR_MD
+008B   01D8           00247     CLRF    XCUR_LO
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+008C   0008           00248     RETURN
+                      00249 
+                      00250 
+008D                  00251 RECEIVE_LINE
+008D   3030           00252     MOVLW   BUF
+008E   0084           00253     MOVWF   FSR
+008F   01A5           00254     CLRF    ENDFLAG
+0090                  00255 RX_WAIT
+0090   1E8C           00256     BTFSS   PIR1,RCIF
+0091   2890           00257     GOTO    RX_WAIT
+0092   081A           00258     MOVF    RCREG,W
+0093   00A4           00259     MOVWF   RXBYTE
+0094   128C           00260     BCF     PIR1,RCIF
+0095   1898           00261     BTFSC   RCSTA,OERR
+0096   20B9           00262     CALL    CLEAR_OERR
+                      00263 
+0097   300D           00264     MOVLW   0x0D
+0098   0224           00265     SUBWF   RXBYTE,W
+0099   1903           00266     BTFSC   STATUS,Z
+009A   2890           00267     GOTO    RX_WAIT
+                      00268 
+009B   300A           00269     MOVLW   0x0A
+009C   0224           00270     SUBWF   RXBYTE,W
+009D   1903           00271     BTFSC   STATUS,Z
+009E   28A3           00272     GOTO    LINE_DONE
+                      00273 
+009F   0824           00274     MOVF    RXBYTE,W
+00A0   0080           00275     MOVWF   INDF
+00A1   0A84           00276     INCF    FSR,F
+00A2   2890           00277     GOTO    RX_WAIT
+00A3                  00278 LINE_DONE
+                      00279 
+00A3   3043           00280     MOVLW   BUF+13
+00A4   0084           00281     MOVWF   FSR
+00A5   0800           00282     MOVF    INDF,W
+00A6   00CA           00283     MOVWF   PENVAL
+                      00284 
+00A7   3030           00285     MOVLW   BUF
+00A8   0084           00286     MOVWF   FSR
+00A9   0800           00287     MOVF    INDF,W
+00AA   3C45           00288     SUBLW   A'E'
+00AB   1D03           00289     BTFSS   STATUS,Z
+00AC   0008           00290     RETURN
+00AD   0A84           00291     INCF    FSR,F
+00AE   0800           00292     MOVF    INDF,W
+00AF   3C4E           00293     SUBLW   A'N'
+00B0   1D03           00294     BTFSS   STATUS,Z
+00B1   0008           00295     RETURN
+00B2   0A84           00296     INCF    FSR,F
+00B3   0800           00297     MOVF    INDF,W
+00B4   3C44           00298     SUBLW   A'D'
+00B5   1D03           00299     BTFSS   STATUS,Z
+00B6   0008           00300     RETURN
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00B7   1425           00301     BSF     ENDFLAG,0
+00B8   0008           00302     RETURN
+00B9                  00303 CLEAR_OERR
+00B9   1218           00304     BCF     RCSTA,CREN
+00BA   1618           00305     BSF     RCSTA,CREN
+00BB   0008           00306     RETURN
+                      00307 
+00BC                  00308 PARSE_AND_DISPLAY
+00BC   3031           00309     MOVLW   BUF+1
+00BD   0084           00310     MOVWF   FSR
+00BE   0800           00311     MOVF    INDF,W
+00BF   00BE           00312     MOVWF   X5
+00C0   3032           00313     MOVLW   BUF+2
+00C1   0084           00314     MOVWF   FSR
+00C2   0800           00315     MOVF    INDF,W
+00C3   00BF           00316     MOVWF   X4
+00C4   3033           00317     MOVLW   BUF+3
+00C5   0084           00318     MOVWF   FSR
+00C6   0800           00319     MOVF    INDF,W
+00C7   00C0           00320     MOVWF   X3
+00C8   3034           00321     MOVLW   BUF+4
+00C9   0084           00322     MOVWF   FSR
+00CA   0800           00323     MOVF    INDF,W
+00CB   00C1           00324     MOVWF   X2
+00CC   3035           00325     MOVLW   BUF+5
+00CD   0084           00326     MOVWF   FSR
+00CE   0800           00327     MOVF    INDF,W
+00CF   00C2           00328     MOVWF   X1
+00D0   3036           00329     MOVLW   BUF+6
+00D1   0084           00330     MOVWF   FSR
+00D2   0800           00331     MOVF    INDF,W
+00D3   00C3           00332     MOVWF   X0
+00D4   3037           00333     MOVLW   BUF+7
+00D5   0084           00334     MOVWF   FSR
+00D6   0800           00335     MOVF    INDF,W
+00D7   00C4           00336     MOVWF   Y5
+00D8   3038           00337     MOVLW   BUF+8
+00D9   0084           00338     MOVWF   FSR
+00DA   0800           00339     MOVF    INDF,W
+00DB   00C5           00340     MOVWF   Y4
+00DC   3039           00341     MOVLW   BUF+9
+00DD   0084           00342     MOVWF   FSR
+00DE   0800           00343     MOVF    INDF,W
+00DF   00C6           00344     MOVWF   Y3
+00E0   3040           00345     MOVLW   BUF+10
+00E1   0084           00346     MOVWF   FSR
+00E2   0800           00347     MOVF    INDF,W
+00E3   00C7           00348     MOVWF   Y2
+00E4   3041           00349     MOVLW   BUF+11
+00E5   0084           00350     MOVWF   FSR
+00E6   0800           00351     MOVF    INDF,W
+00E7   00C8           00352     MOVWF   Y1
+00E8   3042           00353     MOVLW   BUF+12
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00E9   0084           00354     MOVWF   FSR
+00EA   0800           00355     MOVF    INDF,W
+00EB   00C9           00356     MOVWF   Y0
+                      00357 
+                      00358     ; LCD "X:NNN.N Y:NNN.N "
+00EC   21C4           00359     CALL    CONV_X
+00ED   3080           00360     MOVLW   H'80'
+00EE   235D           00361     CALL    COMMAND
+00EF   3058           00362     MOVLW   A'X'
+00F0   2373           00363     CALL    CHAR
+00F1   303A           00364     MOVLW   A':'
+00F2   2373           00365     CALL    CHAR
+00F3   2101           00366     CALL    DISP_DIGITS
+00F4   3020           00367     MOVLW   A' '
+00F5   2373           00368     CALL    CHAR
+                      00369 
+00F6   30C0           00370     MOVLW   H'C0'
+00F7   235D           00371     CALL    COMMAND
+                      00372 
+00F8   21EE           00373     CALL    CONV_Y
+00F9   3059           00374     MOVLW   A'Y'
+00FA   2373           00375     CALL    CHAR
+00FB   303A           00376     MOVLW   A':'
+00FC   2373           00377     CALL    CHAR
+00FD   2101           00378     CALL    DISP_DIGITS
+00FE   3020           00379     MOVLW   A' '
+00FF   2373           00380     CALL    CHAR
+                      00381 
+0100   0008           00382     RETURN
+                      00383 ; ===========================================================
+                      00384 ;   DISP_DIGITS
+                      00385 ;   Converts 24-bit step count in MULX:MULH:MULL to mm with
+                      00386 ;   1 decimal place and outputs 5 LCD chars: "NNN.N"
+                      00387 ;   (e.g. 80000 steps / 400 steps/mm = 200.0 -> "200.0")
+                      00388 ;   Strategy: repeated subtraction of 40000 / 4000 / 400 / 40.
+                      00389 ;   Save/restore on underflow so the remainder is always correct.
+                      00390 ;   Clobbers: REG1, REG2, REG3, TMPH, TMPL, TMP2H, TMP2L, TMP3
+                      00391 ;   MULX:MULH:MULL is consumed (left as remainder mod 40).
+                      00392 ; ===========================================================
+0101                  00393 DISP_DIGITS
+                      00394     ; --- Hundreds of mm: subtract 40000 = 0x009C40 ---
+0101   01A1           00395     CLRF    REG1
+0102                  00396 DD_H_LOOP
+0102   0870           00397     MOVF    MULX,W
+0103   00EF           00398     MOVWF   TMP3            ; save HI
+0104   0871           00399     MOVF    MULH,W
+0105   00EB           00400     MOVWF   TMPH            ; save MD
+0106   0872           00401     MOVF    MULL,W
+0107   00EC           00402     MOVWF   TMPL            ; save LO
+0108   3040           00403     MOVLW   0x40
+0109   02F2           00404     SUBWF   MULL,F          ; MULL -= 0x40; C=0 -> borrow
+010A   309C           00405     MOVLW   0x9C
+010B   1C03           00406     BTFSS   STATUS,C
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+010C   3E01           00407     ADDLW   1               ; add borrow: subtract 0x9D from MULH
+010D   02F1           00408     SUBWF   MULH,F          ; C=0 -> borrow
+010E   3000           00409     MOVLW   0x00
+010F   1C03           00410     BTFSS   STATUS,C
+0110   3E01           00411     ADDLW   1               ; add borrow: subtract 1 from MULX
+0111   02F0           00412     SUBWF   MULX,F          ; C=0 -> overall underflow
+0112   1C03           00413     BTFSS   STATUS,C
+0113   2916           00414     GOTO    DD_H_RESTORE
+0114   0AA1           00415     INCF    REG1,F
+0115   2902           00416     GOTO    DD_H_LOOP
+0116                  00417 DD_H_RESTORE
+0116   086F           00418     MOVF    TMP3,W
+0117   00F0           00419     MOVWF   MULX
+0118   086B           00420     MOVF    TMPH,W
+0119   00F1           00421     MOVWF   MULH
+011A   086C           00422     MOVF    TMPL,W
+011B   00F2           00423     MOVWF   MULL
+                      00424     ; --- Tens of mm: subtract 4000 = 0x000FA0 ---
+011C   01A2           00425     CLRF    REG2
+011D                  00426 DD_T_LOOP
+011D   0870           00427     MOVF    MULX,W
+011E   00EF           00428     MOVWF   TMP3
+011F   0871           00429     MOVF    MULH,W
+0120   00EB           00430     MOVWF   TMPH
+0121   0872           00431     MOVF    MULL,W
+0122   00EC           00432     MOVWF   TMPL
+0123   30A0           00433     MOVLW   0xA0
+0124   02F2           00434     SUBWF   MULL,F
+0125   300F           00435     MOVLW   0x0F
+0126   1C03           00436     BTFSS   STATUS,C
+0127   3E01           00437     ADDLW   1
+0128   02F1           00438     SUBWF   MULH,F
+0129   3000           00439     MOVLW   0x00
+012A   1C03           00440     BTFSS   STATUS,C
+012B   3E01           00441     ADDLW   1
+012C   02F0           00442     SUBWF   MULX,F
+012D   1C03           00443     BTFSS   STATUS,C
+012E   2931           00444     GOTO    DD_T_RESTORE
+012F   0AA2           00445     INCF    REG2,F
+0130   291D           00446     GOTO    DD_T_LOOP
+0131                  00447 DD_T_RESTORE
+0131   086F           00448     MOVF    TMP3,W
+0132   00F0           00449     MOVWF   MULX
+0133   086B           00450     MOVF    TMPH,W
+0134   00F1           00451     MOVWF   MULH
+0135   086C           00452     MOVF    TMPL,W
+0136   00F2           00453     MOVWF   MULL
+                      00454     ; --- Ones of mm: subtract 400 = 0x000190 ---
+0137   01A3           00455     CLRF    REG3
+0138                  00456 DD_O_LOOP
+0138   0870           00457     MOVF    MULX,W
+0139   00EF           00458     MOVWF   TMP3
+013A   0871           00459     MOVF    MULH,W
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+013B   00EB           00460     MOVWF   TMPH
+013C   0872           00461     MOVF    MULL,W
+013D   00EC           00462     MOVWF   TMPL
+013E   3090           00463     MOVLW   0x90
+013F   02F2           00464     SUBWF   MULL,F
+0140   3001           00465     MOVLW   0x01
+0141   1C03           00466     BTFSS   STATUS,C
+0142   3E01           00467     ADDLW   1
+0143   02F1           00468     SUBWF   MULH,F
+0144   3000           00469     MOVLW   0x00
+0145   1C03           00470     BTFSS   STATUS,C
+0146   3E01           00471     ADDLW   1
+0147   02F0           00472     SUBWF   MULX,F
+0148   1C03           00473     BTFSS   STATUS,C
+0149   294C           00474     GOTO    DD_O_RESTORE
+014A   0AA3           00475     INCF    REG3,F
+014B   2938           00476     GOTO    DD_O_LOOP
+014C                  00477 DD_O_RESTORE
+014C   086F           00478     MOVF    TMP3,W
+014D   00F0           00479     MOVWF   MULX
+014E   086B           00480     MOVF    TMPH,W
+014F   00F1           00481     MOVWF   MULH
+0150   086C           00482     MOVF    TMPL,W
+0151   00F2           00483     MOVWF   MULL
+                      00484     ; --- Tenths of mm: subtract 40 = 0x000028 ---
+                      00485     ; Use TMPH as digit counter here (TMP3:TMP2H:TMP2L for save)
+0152   01EB           00486     CLRF    TMPH
+0153                  00487 DD_F_LOOP
+0153   0870           00488     MOVF    MULX,W
+0154   00EF           00489     MOVWF   TMP3
+0155   0871           00490     MOVF    MULH,W
+0156   00ED           00491     MOVWF   TMP2H
+0157   0872           00492     MOVF    MULL,W
+0158   00EE           00493     MOVWF   TMP2L
+0159   3028           00494     MOVLW   0x28
+015A   02F2           00495     SUBWF   MULL,F
+015B   3000           00496     MOVLW   0x00
+015C   1C03           00497     BTFSS   STATUS,C
+015D   3E01           00498     ADDLW   1
+015E   02F1           00499     SUBWF   MULH,F
+015F   3000           00500     MOVLW   0x00
+0160   1C03           00501     BTFSS   STATUS,C
+0161   3E01           00502     ADDLW   1
+0162   02F0           00503     SUBWF   MULX,F
+0163   1C03           00504     BTFSS   STATUS,C
+0164   2967           00505     GOTO    DD_F_RESTORE
+0165   0AEB           00506     INCF    TMPH,F
+0166   2953           00507     GOTO    DD_F_LOOP
+0167                  00508 DD_F_RESTORE
+0167   086F           00509     MOVF    TMP3,W
+0168   00F0           00510     MOVWF   MULX
+0169   086D           00511     MOVF    TMP2H,W
+016A   00F1           00512     MOVWF   MULH
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+016B   086E           00513     MOVF    TMP2L,W
+016C   00F2           00514     MOVWF   MULL
+                      00515     ; --- Output digits: REG1 REG2 REG3 . TMPH ---
+                      00516     ; CHAR calls DELAY10MS which destroys REG1/REG2/REG3.
+                      00517     ; Save all four digit values to registers DELAY10MS does NOT touch.
+016D   0821           00518     MOVF    REG1,W
+016E   00EF           00519     MOVWF   TMP3        ; hundreds -> TMP3 (safe)
+016F   0822           00520     MOVF    REG2,W
+0170   00ED           00521     MOVWF   TMP2H       ; tens    -> TMP2H (safe)
+0171   0823           00522     MOVF    REG3,W
+0172   00EE           00523     MOVWF   TMP2L       ; ones    -> TMP2L (safe)
+                      00524     ; TMPH = tenths (not touched by DELAY10MS, already safe)
+0173   086F           00525     MOVF    TMP3,W
+0174   3E30           00526     ADDLW   A'0'
+0175   2373           00527     CALL    CHAR
+0176   086D           00528     MOVF    TMP2H,W
+0177   3E30           00529     ADDLW   A'0'
+0178   2373           00530     CALL    CHAR
+0179   086E           00531     MOVF    TMP2L,W
+017A   3E30           00532     ADDLW   A'0'
+017B   2373           00533     CALL    CHAR
+017C   302E           00534     MOVLW   A'.'
+017D   2373           00535     CALL    CHAR
+017E   086B           00536     MOVF    TMPH,W
+017F   3E30           00537     ADDLW   A'0'
+0180   2373           00538     CALL    CHAR
+0181   0008           00539     RETURN
+                      00540 ; ===========================================================
+                      00541 ;   EXECUTE_MOTION
+                      00542 ;
+                      00543 ;   SERVER sends:  '1' = pen DOWN (draw trace)
+                      00544 ;                  '2' = pen UP   (travel / reposition)
+                      00545 ;
+                      00546 ;   SERVO_PULSE_DOWN  = 1ms HIGH = SG90 at 0�   = pen presses onto PCB
+                      00547 ;   SERVO_PULSE_UP    = 2ms HIGH = SG90 at 180�  = pen lifts off  PCB
+                      00548 ;
+                      00549 ;   Servo is driven unconditionally on every command:
+                      00550 ;     D'10' pulses � 20ms = 200ms � enough for full 180� travel.
+                      00551 ;   No state-change detection needed: simple, reliable, easy to verify.
+                      00552 ; ===========================================================
+0182                  00553 EXECUTE_MOTION
+0182   21C4           00554     CALL    CONV_X
+0183   21EE           00555     CALL    CONV_Y
+                      00556     ; [DBG] Echo PENVAL over UART so we can see what the PIC received.
+                      00557     ; Expected: 0x31 ('1') = pen DOWN, 0x32 ('2') = pen UP.
+                      00558     ; 0x00 = RECEIVE_LINE never completed. Anything else = corruption.
+                      00559     ; This byte appears on the terminal BEFORE the 'A' ACK.
+0184                  00560 DBG_TX_WAIT
+0184   1E0C           00561     BTFSS   PIR1,TXIF           ; [DBG] wait for TX register empty
+0185   2984           00562     GOTO    DBG_TX_WAIT         ; [DBG]
+0186   084A           00563     MOVF    PENVAL,W            ; [DBG] load PENVAL
+0187   0099           00564     MOVWF   TXREG               ; [DBG] transmit it � remove these 4 lines after diagnosis
+                      00565     ; Drive servo for 10 pulses (200ms) � every command, no exceptions
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0188   300A           00566     MOVLW   D'10'
+0189   00A3           00567     MOVWF   REG3
+018A                  00568 PEN_LOOP
+018A   3031           00569     MOVLW   A'1'
+018B   024A           00570     SUBWF   PENVAL,W            ; Z=1 if PENVAL='1' (pen DOWN)
+018C   1903           00571     BTFSC   STATUS,Z
+018D   21AD           00572     CALL    SERVO_PULSE_DOWN    ; '1' ? 1ms (0deg) ? presses pen onto PCB
+018E   3032           00573     MOVLW   A'2'
+018F   024A           00574     SUBWF   PENVAL,W            ; Z=1 if PENVAL='2' (pen UP)
+0190   1903           00575     BTFSC   STATUS,Z
+0191   2196           00576     CALL    SERVO_PULSE_UP      ; '2' ? ~1.085ms ? lifts pen 15deg off PCB
+0192   0BA3           00577     DECFSZ  REG3,F
+0193   298A           00578     GOTO    PEN_LOOP
+0194   2235           00579     CALL    BRESENHAM
+0195   0008           00580     RETURN
+                      00581 ; ===========================================================
+                      00582 ;   SERVO PULSES � single 20ms PWM frame per call
+                      00583 ; ===========================================================
+0196                  00584 SERVO_PULSE_UP
+                      00585     ; myservo.write(15) equivalent: ~1.085ms HIGH = 15deg above 0deg
+                      00586     ; Formula: 5*DLY1 + 5 = 1085us  ?  DLY1 = 216  (DLY2=1 outer loop)
+0196   1606           00587     BSF     SERVO
+0197   3001           00588     MOVLW   D'1'                ; 1 outer loop ? ~1.085ms HIGH (15deg, pen just off paper)
+0198   00FA           00589     MOVWF   DLY2
+0199                  00590 SPU_H_OUT
+0199   30D8           00591     MOVLW   D'216'              ; 5�216 + 5 = 1085 cycles � 1.085ms
+019A   00F9           00592     MOVWF   DLY1
+019B                  00593 SPU_H_IN
+019B   0000           00594     NOP
+019C   0000           00595     NOP
+019D   0BF9           00596     DECFSZ  DLY1,F
+019E   299B           00597     GOTO    SPU_H_IN
+019F   0BFA           00598     DECFSZ  DLY2,F
+01A0   2999           00599     GOTO    SPU_H_OUT
+01A1   1206           00600     BCF     SERVO
+01A2   3013           00601     MOVLW   D'19'               ; 19ms LOW ? total period ~20.2ms
+01A3   00FA           00602     MOVWF   DLY2
+01A4                  00603 SPU_L_OUT
+01A4   30C8           00604     MOVLW   D'200'
+01A5   00F9           00605     MOVWF   DLY1
+01A6                  00606 SPU_L_IN
+01A6   0000           00607     NOP
+01A7   0000           00608     NOP
+01A8   0BF9           00609     DECFSZ  DLY1,F
+01A9   29A6           00610     GOTO    SPU_L_IN
+01AA   0BFA           00611     DECFSZ  DLY2,F
+01AB   29A4           00612     GOTO    SPU_L_OUT
+01AC   0008           00613     RETURN
+01AD                  00614 SERVO_PULSE_DOWN
+01AD   1606           00615     BSF     SERVO
+01AE   3001           00616     MOVLW   D'1'                ; 1ms HIGH
+01AF   00FA           00617     MOVWF   DLY2
+01B0                  00618 SPD_H_OUT
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01B0   30C8           00619     MOVLW   D'200'
+01B1   00F9           00620     MOVWF   DLY1
+01B2                  00621 SPD_H_IN
+01B2   0000           00622     NOP
+01B3   0000           00623     NOP
+01B4   0BF9           00624     DECFSZ  DLY1,F
+01B5   29B2           00625     GOTO    SPD_H_IN
+01B6   0BFA           00626     DECFSZ  DLY2,F
+01B7   29B0           00627     GOTO    SPD_H_OUT
+01B8   1206           00628     BCF     SERVO
+01B9   3013           00629     MOVLW   D'19'               ; 19ms LOW
+01BA   00FA           00630     MOVWF   DLY2
+01BB                  00631 SPD_L_OUT
+01BB   30C8           00632     MOVLW   D'200'
+01BC   00F9           00633     MOVWF   DLY1
+01BD                  00634 SPD_L_IN
+01BD   0000           00635     NOP
+01BE   0000           00636     NOP
+01BF   0BF9           00637     DECFSZ  DLY1,F
+01C0   29BD           00638     GOTO    SPD_L_IN
+01C1   0BFA           00639     DECFSZ  DLY2,F
+01C2   29BB           00640     GOTO    SPD_L_OUT
+01C3   0008           00641     RETURN
+                      00642 ; ===========================================================
+                      00643 ;   CONV_X
+                      00644 ;   Converts 6 ASCII decimal digit step value (X5..X0) into
+                      00645 ;   a 24-bit step count in XTGT_HI:XTGT_MD:XTGT_LO.
+                      00646 ;   Formula (Horner): steps = ((((X5*10+X4)*10+X3)*10+X2)*10+X1)*10+X0
+                      00647 ;   Uses 24-bit accumulator MULX:MULH:MULL and MUL10_24.
+                      00648 ;   Server pre-multiplied by 400 � no further scaling needed.
+                      00649 ; ===========================================================
+01C4                  00650 CONV_X
+                      00651     ; Seed accumulator with X5 digit value
+01C4   01F0           00652     CLRF    MULX
+01C5   01F1           00653     CLRF    MULH
+01C6   083E           00654     MOVF    X5,W
+01C7   390F           00655     ANDLW   0x0F
+01C8   00F2           00656     MOVWF   MULL
+                      00657     ; acc = acc*10 + X4
+01C9   2218           00658     CALL    MUL10_24
+01CA   083F           00659     MOVF    X4,W
+01CB   390F           00660     ANDLW   0x0F
+01CC   07F2           00661     ADDWF   MULL,F
+01CD   1803           00662     BTFSC   STATUS,C
+01CE   0AF1           00663     INCF    MULH,F
+                      00664     ; acc = acc*10 + X3
+01CF   2218           00665     CALL    MUL10_24
+01D0   0840           00666     MOVF    X3,W
+01D1   390F           00667     ANDLW   0x0F
+01D2   07F2           00668     ADDWF   MULL,F
+01D3   1803           00669     BTFSC   STATUS,C
+01D4   0AF1           00670     INCF    MULH,F
+                      00671     ; acc = acc*10 + X2
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01D5   2218           00672     CALL    MUL10_24
+01D6   0841           00673     MOVF    X2,W
+01D7   390F           00674     ANDLW   0x0F
+01D8   07F2           00675     ADDWF   MULL,F
+01D9   1803           00676     BTFSC   STATUS,C
+01DA   0AF1           00677     INCF    MULH,F
+                      00678     ; acc = acc*10 + X1
+01DB   2218           00679     CALL    MUL10_24
+01DC   0842           00680     MOVF    X1,W
+01DD   390F           00681     ANDLW   0x0F
+01DE   07F2           00682     ADDWF   MULL,F
+01DF   1803           00683     BTFSC   STATUS,C
+01E0   0AF1           00684     INCF    MULH,F
+                      00685     ; acc = acc*10 + X0
+01E1   2218           00686     CALL    MUL10_24
+01E2   0843           00687     MOVF    X0,W
+01E3   390F           00688     ANDLW   0x0F
+01E4   07F2           00689     ADDWF   MULL,F
+01E5   1803           00690     BTFSC   STATUS,C
+01E6   0AF1           00691     INCF    MULH,F
+                      00692     ; Store 24-bit result into XTGT
+01E7   0870           00693     MOVF    MULX,W
+01E8   00D0           00694     MOVWF   XTGT_HI
+01E9   0871           00695     MOVF    MULH,W
+01EA   00D1           00696     MOVWF   XTGT_MD
+01EB   0872           00697     MOVF    MULL,W
+01EC   00D2           00698     MOVWF   XTGT_LO
+01ED   0008           00699     RETURN
+                      00700 ; ===========================================================
+                      00701 ;   CONV_Y  (identical structure to CONV_X)
+                      00702 ; ===========================================================
+01EE                  00703 CONV_Y
+01EE   01F0           00704     CLRF    MULX
+01EF   01F1           00705     CLRF    MULH
+01F0   0844           00706     MOVF    Y5,W
+01F1   390F           00707     ANDLW   0x0F
+01F2   00F2           00708     MOVWF   MULL
+01F3   2218           00709     CALL    MUL10_24
+01F4   0845           00710     MOVF    Y4,W
+01F5   390F           00711     ANDLW   0x0F
+01F6   07F2           00712     ADDWF   MULL,F
+01F7   1803           00713     BTFSC   STATUS,C
+01F8   0AF1           00714     INCF    MULH,F
+01F9   2218           00715     CALL    MUL10_24
+01FA   0846           00716     MOVF    Y3,W
+01FB   390F           00717     ANDLW   0x0F
+01FC   07F2           00718     ADDWF   MULL,F
+01FD   1803           00719     BTFSC   STATUS,C
+01FE   0AF1           00720     INCF    MULH,F
+01FF   2218           00721     CALL    MUL10_24
+0200   0847           00722     MOVF    Y2,W
+0201   390F           00723     ANDLW   0x0F
+0202   07F2           00724     ADDWF   MULL,F
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0203   1803           00725     BTFSC   STATUS,C
+0204   0AF1           00726     INCF    MULH,F
+0205   2218           00727     CALL    MUL10_24
+0206   0848           00728     MOVF    Y1,W
+0207   390F           00729     ANDLW   0x0F
+0208   07F2           00730     ADDWF   MULL,F
+0209   1803           00731     BTFSC   STATUS,C
+020A   0AF1           00732     INCF    MULH,F
+020B   2218           00733     CALL    MUL10_24
+020C   0849           00734     MOVF    Y0,W
+020D   390F           00735     ANDLW   0x0F
+020E   07F2           00736     ADDWF   MULL,F
+020F   1803           00737     BTFSC   STATUS,C
+0210   0AF1           00738     INCF    MULH,F
+0211   0870           00739     MOVF    MULX,W
+0212   00D3           00740     MOVWF   YTGT_HI
+0213   0871           00741     MOVF    MULH,W
+0214   00D4           00742     MOVWF   YTGT_MD
+0215   0872           00743     MOVF    MULL,W
+0216   00D5           00744     MOVWF   YTGT_LO
+0217   0008           00745     RETURN
+                      00746 ; ===========================================================
+                      00747 ;   MUL10_24
+                      00748 ;   Multiplies 24-bit accumulator MULX:MULH:MULL by 10.
+                      00749 ;   Method: 10*X = 8*X + 2*X
+                      00750 ;     1. Shift left once  -> 2*X (save in TMP3:TMPH:TMPL)
+                      00751 ;     2. Shift left twice -> 8*X
+                      00752 ;     3. Add back 2*X
+                      00753 ;   Max input before final digit add: ~19999 = 0x04E1F  (safe in 3 bytes)
+                      00754 ; ===========================================================
+0218                  00755 MUL10_24
+                      00756     ; Step 1: shift left 1 to get 2*X
+0218   1003           00757     BCF     STATUS,C
+0219   0DF2           00758     RLF     MULL,F
+021A   0DF1           00759     RLF     MULH,F
+021B   0DF0           00760     RLF     MULX,F
+                      00761     ; Save 2*X into TMP3:TMPH:TMPL
+021C   0870           00762     MOVF    MULX,W
+021D   00EF           00763     MOVWF   TMP3
+021E   0871           00764     MOVF    MULH,W
+021F   00EB           00765     MOVWF   TMPH
+0220   0872           00766     MOVF    MULL,W
+0221   00EC           00767     MOVWF   TMPL
+                      00768     ; Step 2: shift left 2 more to get 8*X
+0222   1003           00769     BCF     STATUS,C
+0223   0DF2           00770     RLF     MULL,F
+0224   0DF1           00771     RLF     MULH,F
+0225   0DF0           00772     RLF     MULX,F
+0226   1003           00773     BCF     STATUS,C
+0227   0DF2           00774     RLF     MULL,F
+0228   0DF1           00775     RLF     MULH,F
+0229   0DF0           00776     RLF     MULX,F
+                      00777     ; Step 3: add 2*X back (MULX:MULH:MULL += TMP3:TMPH:TMPL)
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00778     ; LO byte � carry from LO propagates into MULH via INCF
+022A   086C           00779     MOVF    TMPL,W
+022B   07F2           00780     ADDWF   MULL,F
+022C   1803           00781     BTFSC   STATUS,C
+022D   0AF1           00782     INCF    MULH,F              ; carry from LO (MULH bounded, won't wrap)
+                      00783     ; MD byte
+022E   086B           00784     MOVF    TMPH,W
+022F   07F1           00785     ADDWF   MULH,F
+0230   1803           00786     BTFSC   STATUS,C
+0231   0AF0           00787     INCF    MULX,F              ; carry from MD
+                      00788     ; HI byte
+0232   086F           00789     MOVF    TMP3,W
+0233   07F0           00790     ADDWF   MULX,F
+0234   0008           00791     RETURN
+                      00792 ; ===========================================================
+                      00793 ;   BRESENHAM
+                      00794 ;   2D line algorithm. Dominant axis always steps once per
+                      00795 ;   iteration. Minor axis steps when accumulated error
+                      00796 ;   exceeds the dominant delta.
+                      00797 ;
+                      00798 ;   All arithmetic is 24-bit to handle up to 100000 steps.
+                      00799 ;
+                      00800 ;   XDIR_F = 1: X moving toward home (negative direction)
+                      00801 ;   YDIR_F = 1: Y moving toward home (negative direction)
+                      00802 ;   DOM_FLAG = 0: X dominant | DOM_FLAG = 1: Y dominant
+                      00803 ;
+                      00804 ;   [v10-FIX-8] 16-bit BERR >= DELTA comparisons correctly
+                      00805 ;   propagate borrow � extended to 24-bit in v11.
+                      00806 ;
+                      00807 ;   [v10-FIX-9] DX and DY direction subtractions correctly
+                      00808 ;   propagate borrow � extended to 24-bit in v11.
+                      00809 ; ===========================================================
+0235                  00810 BRESENHAM
+                      00811     ; Early exit if already at target (24-bit compare X then Y)
+0235   0852           00812     MOVF    XTGT_LO,W
+0236   0258           00813     SUBWF   XCUR_LO,W
+0237   1D03           00814     BTFSS   STATUS,Z
+0238   2A4E           00815     GOTO    BRES_CALC
+0239   0851           00816     MOVF    XTGT_MD,W
+023A   0257           00817     SUBWF   XCUR_MD,W
+023B   1D03           00818     BTFSS   STATUS,Z
+023C   2A4E           00819     GOTO    BRES_CALC
+023D   0850           00820     MOVF    XTGT_HI,W
+023E   0256           00821     SUBWF   XCUR_HI,W
+023F   1D03           00822     BTFSS   STATUS,Z
+0240   2A4E           00823     GOTO    BRES_CALC
+0241   0855           00824     MOVF    YTGT_LO,W
+0242   025B           00825     SUBWF   YCUR_LO,W
+0243   1D03           00826     BTFSS   STATUS,Z
+0244   2A4E           00827     GOTO    BRES_CALC
+0245   0854           00828     MOVF    YTGT_MD,W
+0246   025A           00829     SUBWF   YCUR_MD,W
+0247   1D03           00830     BTFSS   STATUS,Z
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0248   2A4E           00831     GOTO    BRES_CALC
+0249   0853           00832     MOVF    YTGT_HI,W
+024A   0259           00833     SUBWF   YCUR_HI,W
+024B   1D03           00834     BTFSS   STATUS,Z
+024C   2A4E           00835     GOTO    BRES_CALC
+024D   0008           00836     RETURN                      ; Already at target
+                      00837 
+                      00838 ; --- Compute |DX| and X direction (24-bit, borrow-propagating) ---
+                      00839 ; [v10-FIX-9 / v11] Pattern: load next subtrahend byte WITHOUT changing C,
+                      00840 ; then conditionally add the borrow before performing the SUBWF.
+024E                  00841 BRES_CALC
+024E   0858           00842     MOVF    XCUR_LO,W
+024F   0252           00843     SUBWF   XTGT_LO,W           ; W = XTGT_LO - XCUR_LO, C=0 if borrow
+0250   00DE           00844     MOVWF   DX_LO
+0251   0857           00845     MOVF    XCUR_MD,W            ; MOVF does NOT change C
+0252   1C03           00846     BTFSS   STATUS,C             ; C=0 (borrow) -> add 1 to subtrahend
+0253   3E01           00847     ADDLW   0x01
+0254   0251           00848     SUBWF   XTGT_MD,W            ; W = XTGT_MD - (XCUR_MD + borrow)
+0255   00DD           00849     MOVWF   DX_MD
+0256   0856           00850     MOVF    XCUR_HI,W
+0257   1C03           00851     BTFSS   STATUS,C
+0258   3E01           00852     ADDLW   0x01
+0259   0250           00853     SUBWF   XTGT_HI,W
+025A   00DC           00854     MOVWF   DX_HI
+025B   1803           00855     BTFSC   STATUS,C
+025C   2A6B           00856     GOTO    X_IS_POSITIVE        ; No borrow -> XTGT >= XCUR
+                      00857     ; Negate DX (24-bit two's complement): ~DX + 1
+025D   09DE           00858     COMF    DX_LO,F
+025E   09DD           00859     COMF    DX_MD,F
+025F   09DC           00860     COMF    DX_HI,F
+0260   3001           00861     MOVLW   0x01
+0261   07DE           00862     ADDWF   DX_LO,F              ; C=1 if LO wrapped 0xFF->0x00
+0262   1C03           00863     BTFSS   STATUS,C
+0263   2A68           00864     GOTO    X_NEGATE_DONE
+0264   0ADD           00865     INCF    DX_MD,F              ; carry into MD; Z=1 if MD wrapped
+0265   1D03           00866     BTFSS   STATUS,Z
+0266   2A68           00867     GOTO    X_NEGATE_DONE
+0267   0ADC           00868     INCF    DX_HI,F
+0268                  00869 X_NEGATE_DONE
+0268   3001           00870     MOVLW   0x01
+0269   00E8           00871     MOVWF   XDIR_F
+026A   2A6C           00872     GOTO    BRES_CALC_DY
+026B                  00873 X_IS_POSITIVE
+026B   01E8           00874     CLRF    XDIR_F
+                      00875 
+                      00876 ; --- Compute |DY| and Y direction (24-bit, same pattern) ---
+026C                  00877 BRES_CALC_DY
+026C   085B           00878     MOVF    YCUR_LO,W
+026D   0255           00879     SUBWF   YTGT_LO,W
+026E   00E1           00880     MOVWF   DY_LO
+026F   085A           00881     MOVF    YCUR_MD,W
+0270   1C03           00882     BTFSS   STATUS,C
+0271   3E01           00883     ADDLW   0x01
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0272   0254           00884     SUBWF   YTGT_MD,W
+0273   00E0           00885     MOVWF   DY_MD
+0274   0859           00886     MOVF    YCUR_HI,W
+0275   1C03           00887     BTFSS   STATUS,C
+0276   3E01           00888     ADDLW   0x01
+0277   0253           00889     SUBWF   YTGT_HI,W
+0278   00DF           00890     MOVWF   DY_HI
+0279   1803           00891     BTFSC   STATUS,C
+027A   2A89           00892     GOTO    Y_IS_POSITIVE
+027B   09E1           00893     COMF    DY_LO,F
+027C   09E0           00894     COMF    DY_MD,F
+027D   09DF           00895     COMF    DY_HI,F
+027E   3001           00896     MOVLW   0x01
+027F   07E1           00897     ADDWF   DY_LO,F
+0280   1C03           00898     BTFSS   STATUS,C
+0281   2A86           00899     GOTO    Y_NEGATE_DONE
+0282   0AE0           00900     INCF    DY_MD,F
+0283   1D03           00901     BTFSS   STATUS,Z
+0284   2A86           00902     GOTO    Y_NEGATE_DONE
+0285   0ADF           00903     INCF    DY_HI,F
+0286                  00904 Y_NEGATE_DONE
+0286   3001           00905     MOVLW   0x01
+0287   00E9           00906     MOVWF   YDIR_F
+0288   2A8A           00907     GOTO    BRES_SET_DIRS
+0289                  00908 Y_IS_POSITIVE
+0289   01E9           00909     CLRF    YDIR_F
+                      00910 
+                      00911 ; --- Apply directions to driver DIR pins ---
+028A                  00912 BRES_SET_DIRS
+028A   1C68           00913     BTFSS   XDIR_F,0
+028B   1086           00914     BCF     X_DIR
+028C   1868           00915     BTFSC   XDIR_F,0
+028D   1486           00916     BSF     X_DIR
+                      00917     ; Y polarity confirmed by hardware test
+028E   1C69           00918     BTFSS   YDIR_F,0
+028F   1586           00919     BSF     Y_DIR
+0290   1869           00920     BTFSC   YDIR_F,0
+0291   1186           00921     BCF     Y_DIR
+                      00922 
+                      00923 ; --- Choose dominant axis: compare |DX| vs |DY| (24-bit) ---
+0292   085C           00924     MOVF    DX_HI,W
+0293   025F           00925     SUBWF   DY_HI,W             ; DY_HI - DX_HI; C=0 if DX_HI > DY_HI
+0294   1D03           00926     BTFSS   STATUS,Z
+0295   2A9C           00927     GOTO    DOM_DECIDED
+0296   085D           00928     MOVF    DX_MD,W
+0297   0260           00929     SUBWF   DY_MD,W
+0298   1D03           00930     BTFSS   STATUS,Z
+0299   2A9C           00931     GOTO    DOM_DECIDED
+029A   085E           00932     MOVF    DX_LO,W
+029B   0261           00933     SUBWF   DY_LO,W
+029C                  00934 DOM_DECIDED
+029C   1C03           00935     BTFSS   STATUS,C            ; C=0 -> DX > DY -> X dominant
+029D   2AAE           00936     GOTO    SET_X_DOM
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+029E                  00937 SET_Y_DOM
+029E   3001           00938     MOVLW   0x01
+029F   00EA           00939     MOVWF   DOM_FLAG
+02A0   085F           00940     MOVF    DY_HI,W
+02A1   00E5           00941     MOVWF   STEPX_HI
+02A2   0860           00942     MOVF    DY_MD,W
+02A3   00E6           00943     MOVWF   STEPX_MD
+02A4   0861           00944     MOVF    DY_LO,W
+02A5   00E7           00945     MOVWF   STEPX_LO
+                      00946     ; BERR = DY >> 1 (24-bit right-shift through carry)
+02A6   1003           00947     BCF     STATUS,C
+02A7   0C5F           00948     RRF     DY_HI,W
+02A8   00E2           00949     MOVWF   BERR_HI
+02A9   0C60           00950     RRF     DY_MD,W
+02AA   00E3           00951     MOVWF   BERR_MD
+02AB   0C61           00952     RRF     DY_LO,W
+02AC   00E4           00953     MOVWF   BERR_LO
+02AD   2ABC           00954     GOTO    BRES_LOOP
+02AE                  00955 SET_X_DOM
+02AE   01EA           00956     CLRF    DOM_FLAG
+02AF   085C           00957     MOVF    DX_HI,W
+02B0   00E5           00958     MOVWF   STEPX_HI
+02B1   085D           00959     MOVF    DX_MD,W
+02B2   00E6           00960     MOVWF   STEPX_MD
+02B3   085E           00961     MOVF    DX_LO,W
+02B4   00E7           00962     MOVWF   STEPX_LO
+                      00963     ; BERR = DX >> 1
+02B5   1003           00964     BCF     STATUS,C
+02B6   0C5C           00965     RRF     DX_HI,W
+02B7   00E2           00966     MOVWF   BERR_HI
+02B8   0C5D           00967     RRF     DX_MD,W
+02B9   00E3           00968     MOVWF   BERR_MD
+02BA   0C5E           00969     RRF     DX_LO,W
+02BB   00E4           00970     MOVWF   BERR_LO
+                      00971 
+                      00972 ; ===========================================================
+                      00973 ;   BRES_LOOP
+                      00974 ;   Dominant axis steps every iteration.
+                      00975 ;   Minor axis steps when BERR accumulates past dominant delta.
+                      00976 ;
+                      00977 ;   [v11] 24-bit compare pattern (3-byte borrow propagation):
+                      00978 ;     MOVF    DELTA_LO,W
+                      00979 ;     SUBWF   BERR_LO,W          ; W = BERR_LO - DELTA_LO
+                      00980 ;     MOVF    DELTA_MD,W
+                      00981 ;     BTFSS   STATUS,C           ; C=0 -> borrow from lo, add 1 to MD
+                      00982 ;     ADDLW   0x01
+                      00983 ;     SUBWF   BERR_MD,W
+                      00984 ;     MOVF    DELTA_HI,W
+                      00985 ;     BTFSS   STATUS,C
+                      00986 ;     ADDLW   0x01
+                      00987 ;     SUBWF   BERR_HI,W
+                      00988 ;     BTFSS   STATUS,C           ; C=1 -> BERR >= DELTA -> step minor axis
+                      00989 ;     GOTO    SKIP_MINOR_STEP
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00990 ; ===========================================================
+02BC                  00991 BRES_LOOP
+                      00992     ; Check if dominant step counter == 0 (24-bit zero test)
+02BC   0865           00993     MOVF    STEPX_HI,W
+02BD   0466           00994     IORWF   STEPX_MD,W
+02BE   0467           00995     IORWF   STEPX_LO,W
+02BF   1903           00996     BTFSC   STATUS,Z
+02C0   2B1C           00997     GOTO    BRES_DONE
+02C1   186A           00998     BTFSC   DOM_FLAG,0
+02C2   2AEB           00999     GOTO    STEP_Y_DOM
+                      01000 
+                      01001 ; --- X dominant: always step X, maybe step Y ---
+02C3                  01002 STEP_X_DOM
+02C3   1406           01003     BSF     X_STEP
+                      01004     ; Accumulate error: BERR += DY (24-bit)
+02C4   0861           01005     MOVF    DY_LO,W
+02C5   07E4           01006     ADDWF   BERR_LO,F
+02C6   1803           01007     BTFSC   STATUS,C
+02C7   0AE3           01008     INCF    BERR_MD,F            ; carry from LO (BERR bounded, INCF safe)
+02C8   0860           01009     MOVF    DY_MD,W
+02C9   07E3           01010     ADDWF   BERR_MD,F
+02CA   1803           01011     BTFSC   STATUS,C
+02CB   0AE2           01012     INCF    BERR_HI,F
+02CC   085F           01013     MOVF    DY_HI,W
+02CD   07E2           01014     ADDWF   BERR_HI,F
+                      01015     ; [v11] 24-bit compare: BERR >= DX ?
+02CE   085E           01016     MOVF    DX_LO,W
+02CF   0264           01017     SUBWF   BERR_LO,W            ; BERR_LO - DX_LO
+02D0   085D           01018     MOVF    DX_MD,W
+02D1   1C03           01019     BTFSS   STATUS,C
+02D2   3E01           01020     ADDLW   0x01
+02D3   0263           01021     SUBWF   BERR_MD,W
+02D4   085C           01022     MOVF    DX_HI,W
+02D5   1C03           01023     BTFSS   STATUS,C
+02D6   3E01           01024     ADDLW   0x01
+02D7   0262           01025     SUBWF   BERR_HI,W
+02D8   1C03           01026     BTFSS   STATUS,C             ; C=1 -> BERR >= DX, step Y
+02D9   2AE5           01027     GOTO    XD_CLEAR
+02DA   1506           01028     BSF     Y_STEP               ; Diagonal step
+                      01029     ; Subtract DX from BERR (24-bit, borrow-propagating)
+02DB   085E           01030     MOVF    DX_LO,W
+02DC   02E4           01031     SUBWF   BERR_LO,F
+02DD   085D           01032     MOVF    DX_MD,W
+02DE   1C03           01033     BTFSS   STATUS,C
+02DF   3E01           01034     ADDLW   0x01
+02E0   02E3           01035     SUBWF   BERR_MD,F
+02E1   085C           01036     MOVF    DX_HI,W
+02E2   1C03           01037     BTFSS   STATUS,C
+02E3   3E01           01038     ADDLW   0x01
+02E4   02E2           01039     SUBWF   BERR_HI,F
+02E5                  01040 XD_CLEAR
+02E5   0000           01041     NOP
+02E6   0000           01042     NOP
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+02E7   1006           01043     BCF     X_STEP
+02E8   1106           01044     BCF     Y_STEP
+02E9   2329           01045     CALL    STEP_DELAY
+02EA   2B12           01046     GOTO    BRES_DEC
+                      01047 
+                      01048 ; --- Y dominant: always step Y, maybe step X ---
+02EB                  01049 STEP_Y_DOM
+02EB   1506           01050     BSF     Y_STEP
+                      01051     ; Accumulate error: BERR += DX (24-bit)
+02EC   085E           01052     MOVF    DX_LO,W
+02ED   07E4           01053     ADDWF   BERR_LO,F
+02EE   1803           01054     BTFSC   STATUS,C
+02EF   0AE3           01055     INCF    BERR_MD,F
+02F0   085D           01056     MOVF    DX_MD,W
+02F1   07E3           01057     ADDWF   BERR_MD,F
+02F2   1803           01058     BTFSC   STATUS,C
+02F3   0AE2           01059     INCF    BERR_HI,F
+02F4   085C           01060     MOVF    DX_HI,W
+02F5   07E2           01061     ADDWF   BERR_HI,F
+                      01062     ; [v11] 24-bit compare: BERR >= DY ?
+02F6   0861           01063     MOVF    DY_LO,W
+02F7   0264           01064     SUBWF   BERR_LO,W
+02F8   0860           01065     MOVF    DY_MD,W
+02F9   1C03           01066     BTFSS   STATUS,C
+02FA   3E01           01067     ADDLW   0x01
+02FB   0263           01068     SUBWF   BERR_MD,W
+02FC   085F           01069     MOVF    DY_HI,W
+02FD   1C03           01070     BTFSS   STATUS,C
+02FE   3E01           01071     ADDLW   0x01
+02FF   0262           01072     SUBWF   BERR_HI,W
+0300   1C03           01073     BTFSS   STATUS,C             ; C=1 -> BERR >= DY, step X
+0301   2B0D           01074     GOTO    YD_CLEAR
+0302   1406           01075     BSF     X_STEP
+                      01076     ; Subtract DY from BERR (24-bit)
+0303   0861           01077     MOVF    DY_LO,W
+0304   02E4           01078     SUBWF   BERR_LO,F
+0305   0860           01079     MOVF    DY_MD,W
+0306   1C03           01080     BTFSS   STATUS,C
+0307   3E01           01081     ADDLW   0x01
+0308   02E3           01082     SUBWF   BERR_MD,F
+0309   085F           01083     MOVF    DY_HI,W
+030A   1C03           01084     BTFSS   STATUS,C
+030B   3E01           01085     ADDLW   0x01
+030C   02E2           01086     SUBWF   BERR_HI,F
+030D                  01087 YD_CLEAR
+030D   0000           01088     NOP
+030E   0000           01089     NOP
+030F   1106           01090     BCF     Y_STEP
+0310   1006           01091     BCF     X_STEP
+0311   2329           01092     CALL    STEP_DELAY
+                      01093 ; --- Decrement 24-bit dominant step counter ---
+0312                  01094 BRES_DEC
+0312   3001           01095     MOVLW   0x01
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0313   02E7           01096     SUBWF   STEPX_LO,F           ; C=0 if borrow from LO
+0314   1803           01097     BTFSC   STATUS,C
+0315   2ABC           01098     GOTO    BRES_LOOP
+0316   3001           01099     MOVLW   0x01
+0317   02E6           01100     SUBWF   STEPX_MD,F
+0318   1803           01101     BTFSC   STATUS,C
+0319   2ABC           01102     GOTO    BRES_LOOP
+031A   03E5           01103     DECF    STEPX_HI,F
+031B   2ABC           01104     GOTO    BRES_LOOP
+031C                  01105 BRES_DONE
+                      01106 
+                      01107 
+031C   0852           01108     MOVF    XTGT_LO,W
+031D   00D8           01109     MOVWF   XCUR_LO
+031E   0851           01110     MOVF    XTGT_MD,W
+031F   00D7           01111     MOVWF   XCUR_MD
+0320   0850           01112     MOVF    XTGT_HI,W
+0321   00D6           01113     MOVWF   XCUR_HI
+0322   0855           01114     MOVF    YTGT_LO,W
+0323   00DB           01115     MOVWF   YCUR_LO
+0324   0854           01116     MOVF    YTGT_MD,W
+0325   00DA           01117     MOVWF   YCUR_MD
+0326   0853           01118     MOVF    YTGT_HI,W
+0327   00D9           01119     MOVWF   YCUR_HI
+0328   0008           01120     RETURN
+                      01121 
+                      01122 
+0329                  01123 STEP_DELAY
+0329   3001           01124     MOVLW   D'1'
+032A   00FA           01125     MOVWF   DLY2
+032B                  01126 SDL_OUTER
+032B   3010           01127     MOVLW   D'16'
+032C   00F9           01128     MOVWF   DLY1
+032D                  01129 SDL_INNER
+032D   0000           01130     NOP
+032E   0000           01131     NOP
+032F   0BF9           01132     DECFSZ  DLY1,F
+0330   2B2D           01133     GOTO    SDL_INNER
+0331   0BFA           01134     DECFSZ  DLY2,F
+0332   2B2B           01135     GOTO    SDL_OUTER
+0333   0008           01136     RETURN
+                      01137 
+                      01138 
+                      01139 
+0334                  01140 HOME_DELAY
+0334   3002           01141     MOVLW   D'2'
+0335   00FA           01142     MOVWF   DLY2
+0336                  01143 HDL_OUT
+0336   3010           01144     MOVLW   D'16'
+0337   00F9           01145     MOVWF   DLY1
+0338                  01146 HDL_IN
+0338   0000           01147     NOP
+0339   0000           01148     NOP
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+033A   0BF9           01149     DECFSZ  DLY1,F
+033B   2B38           01150     GOTO    HDL_IN
+033C   0BFA           01151     DECFSZ  DLY2,F
+033D   2B36           01152     GOTO    HDL_OUT
+033E   0008           01153     RETURN
+                      01154 
+                      01155 
+                      01156 
+033F                  01157 SEND_ACK
+033F   1E0C           01158     BTFSS   PIR1,TXIF
+0340   2B3F           01159     GOTO    SEND_ACK
+0341   3041           01160     MOVLW   A'A'
+0342   0099           01161     MOVWF   TXREG
+0343   0008           01162     RETURN
+                      01163 
+                      01164 
+0344                  01165 PLOT_DONE
+0344   3001           01166     MOVLW   H'01'
+0345   235D           01167     CALL    COMMAND
+0346   3086           01168     MOVLW   H'86'
+0347   235D           01169     CALL    COMMAND
+0348   3050           01170     MOVLW   A'P'
+0349   2373           01171     CALL    CHAR
+034A   304C           01172     MOVLW   A'L'
+034B   2373           01173     CALL    CHAR
+034C   304F           01174     MOVLW   A'O'
+034D   2373           01175     CALL    CHAR
+034E   3054           01176     MOVLW   A'T'
+034F   2373           01177     CALL    CHAR
+0350   30C5           01178     MOVLW   H'C5'
+0351   235D           01179     CALL    COMMAND
+0352   3044           01180     MOVLW   A'D'
+0353   2373           01181     CALL    CHAR
+0354   304F           01182     MOVLW   A'O'
+0355   2373           01183     CALL    CHAR
+0356   304E           01184     MOVLW   A'N'
+0357   2373           01185     CALL    CHAR
+0358   3045           01186     MOVLW   A'E'
+0359   2373           01187     CALL    CHAR
+035A   3021           01188     MOVLW   A'!'
+035B   2373           01189     CALL    CHAR
+035C   2B5C           01190     GOTO    $
+                      01191 
+                      01192 
+                      01193 
+                      01194 
+035D                  01195 COMMAND
+035D   1109           01196     BCF     PORTE,2
+035E   1089           01197     BCF     PORTE,1
+035F   1009           01198     BCF     PORTE,0
+0360   0088           01199     MOVWF   PORTD
+0361   0000           01200     NOP
+0362   0000           01201     NOP
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0363   0000           01202     NOP
+0364   0000           01203     NOP
+0365   1409           01204     BSF     PORTE,0
+0366   0000           01205     NOP
+0367   0000           01206     NOP
+0368   0000           01207     NOP
+0369   0000           01208     NOP
+036A   0000           01209     NOP
+036B   0000           01210     NOP
+036C   0000           01211     NOP
+036D   0000           01212     NOP
+036E   0000           01213     NOP
+036F   0000           01214     NOP
+0370   1009           01215     BCF     PORTE,0
+0371   23AD           01216     CALL    DELAY10MS
+0372   0008           01217     RETURN
+0373                  01218 CHAR
+0373   1509           01219     BSF     PORTE,2
+0374   1089           01220     BCF     PORTE,1
+0375   1009           01221     BCF     PORTE,0
+0376   0088           01222     MOVWF   PORTD
+0377   0000           01223     NOP
+0378   0000           01224     NOP
+0379   0000           01225     NOP
+037A   0000           01226     NOP
+037B   1409           01227     BSF     PORTE,0
+037C   0000           01228     NOP
+037D   0000           01229     NOP
+037E   0000           01230     NOP
+037F   0000           01231     NOP
+0380   0000           01232     NOP
+0381   0000           01233     NOP
+0382   0000           01234     NOP
+0383   0000           01235     NOP
+0384   0000           01236     NOP
+0385   0000           01237     NOP
+0386   1009           01238     BCF     PORTE,0
+0387   23AD           01239     CALL    DELAY10MS
+0388   0008           01240     RETURN
+0389                  01241 CONFILCD
+0389   0189           01242     CLRF    PORTE
+038A   0188           01243     CLRF    PORTD
+038B   23A0           01244     CALL    DELAY20MS
+038C   23A0           01245     CALL    DELAY20MS
+038D   23A0           01246     CALL    DELAY20MS
+038E   3038           01247     MOVLW   H'38'
+038F   235D           01248     CALL    COMMAND
+0390   3038           01249     MOVLW   H'38'
+0391   235D           01250     CALL    COMMAND
+0392   3038           01251     MOVLW   H'38'
+0393   235D           01252     CALL    COMMAND
+0394   3038           01253     MOVLW   H'38'
+0395   235D           01254     CALL    COMMAND
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0396   3008           01255     MOVLW   H'08'
+0397   235D           01256     CALL    COMMAND
+0398   3001           01257     MOVLW   H'01'
+0399   235D           01258     CALL    COMMAND
+039A   23A0           01259     CALL    DELAY20MS
+039B   3006           01260     MOVLW   H'06'
+039C   235D           01261     CALL    COMMAND
+039D   300C           01262     MOVLW   H'0C'
+039E   235D           01263     CALL    COMMAND
+039F   0008           01264     RETURN
+                      01265 
+03A0                  01266 DELAY20MS
+03A0   3001           01267     MOVLW   D'1'
+03A1   00A3           01268     MOVWF   REG3
+03A2   3019           01269     MOVLW   D'25'
+03A3   00A2           01270     MOVWF   REG2
+03A4   30FF           01271     MOVLW   D'255'
+03A5   00A1           01272     MOVWF   REG1
+03A6   0BA1           01273     DECFSZ  REG1,F
+03A7   2BA6           01274     GOTO    $-1
+03A8   0BA2           01275     DECFSZ  REG2,F
+03A9   2BA4           01276     GOTO    $-5
+03AA   0BA3           01277     DECFSZ  REG3,F
+03AB   2BA2           01278     GOTO    $-9
+03AC   0008           01279     RETURN
+03AD                  01280 DELAY10MS
+03AD   3001           01281     MOVLW   D'1'
+03AE   00A3           01282     MOVWF   REG3
+03AF   300D           01283     MOVLW   D'13'
+03B0   00A2           01284     MOVWF   REG2
+03B1   30FF           01285     MOVLW   D'255'
+03B2   00A1           01286     MOVWF   REG1
+03B3   0BA1           01287     DECFSZ  REG1,F
+03B4   2BB3           01288     GOTO    $-1
+03B5   0BA2           01289     DECFSZ  REG2,F
+03B6   2BB1           01290     GOTO    $-5
+03B7   0BA3           01291     DECFSZ  REG3,F
+03B8   2BAF           01292     GOTO    $-9
+03B9   0008           01293     RETURN
+                      01294     END
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 26
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BERR_HI                           00000062
+BERR_LO                           00000064
+BERR_MD                           00000063
+BF                                00000000
+BRESENHAM                         00000235
+BRES_CALC                         0000024E
+BRES_CALC_DY                      0000026C
+BRES_DEC                          00000312
+BRES_DONE                         0000031C
+BRES_LOOP                         000002BC
+BRES_SET_DIRS                     0000028A
+BRGH                              00000002
+BUF                               00000030
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 27
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHAR                              00000373
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CIS                               00000003
+CKE                               00000006
+CKP                               00000004
+CLEAR_OERR                        000000B9
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000009C
+CMIE                              00000006
+CMIF                              00000006
+COMMAND                           0000035D
+CONFILCD                          00000389
+CONV_X                            000001C4
+CONV_Y                            000001EE
+CREN                              00000004
+CSRC                              00000007
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            0000009D
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+D                                 00000005
+DATA_ADDRESS                      00000005
+DBG_TX_WAIT                       00000184
+DC                                00000001
+DD_F_LOOP                         00000153
+DD_F_RESTORE                      00000167
+DD_H_LOOP                         00000102
+DD_H_RESTORE                      00000116
+DD_O_LOOP                         00000138
+DD_O_RESTORE                      0000014C
+DD_T_LOOP                         0000011D
+DD_T_RESTORE                      00000131
+DELAY10MS                         000003AD
+DELAY20MS                         000003A0
+DISP_DIGITS                       00000101
+DLY1                              00000079
+DLY2                              0000007A
+DLY3                              0000007B
+DOM_DECIDED                       0000029C
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 28
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+DOM_FLAG                          0000006A
+DX_HI                             0000005C
+DX_LO                             0000005E
+DX_MD                             0000005D
+DY_HI                             0000005F
+DY_LO                             00000061
+DY_MD                             00000060
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+ENDFLAG                           00000025
+EXECUTE_MOTION                    00000182
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+HDL_IN                            00000338
+HDL_OUT                           00000336
+HOME_AXES                         00000050
+HOME_DELAY                        00000334
+HOME_X_DONE                       00000089
+HOME_X_LOOP                       00000082
+HOME_Y_DONE                       00000076
+HOME_Y_LOOP                       0000006F
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INIT                              00000001
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LIM_X                             PORTA,2
+LIM_Y                             PORTA,3
+LINE_DONE                         000000A3
+MAIN                              00000046
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 29
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MUL10_24                          00000218
+MULH                              00000071
+MULL                              00000072
+MULX                              00000070
+MUL_A                             00000073
+MUL_B_HI                          00000074
+MUL_B_LO                          00000075
+MUL_CNT                           00000078
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PARSE_AND_DISPLAY                 000000BC
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PENVAL                            0000004A
+PEN_LOOP                          0000018A
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PLOT_DONE                         00000344
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 30
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+RECEIVE_LINE                      0000008D
+REG1                              00000021
+REG2                              00000022
+REG3                              00000023
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 31
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RES_HI                            00000076
+RES_LO                            00000077
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+RXBYTE                            00000024
+RX_WAIT                           00000090
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SDL_INNER                         0000032D
+SDL_OUTER                         0000032B
+SEN                               00000000
+SEND_ACK                          0000033F
+SERVO                             PORTB,4
+SERVO_PULSE_DOWN                  000001AD
+SERVO_PULSE_UP                    00000196
+SET_X_DOM                         000002AE
+SET_Y_DOM                         0000029E
+SMP                               00000007
+SPBRG                             00000099
+SPD_H_IN                          000001B2
+SPD_H_OUT                         000001B0
+SPD_L_IN                          000001BD
+SPD_L_OUT                         000001BB
+SPEN                              00000007
+SPU_H_IN                          0000019B
+SPU_H_OUT                         00000199
+SPU_L_IN                          000001A6
+SPU_L_OUT                         000001A4
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+STEPS_PER_MM                      00000190
+STEPX_HI                          00000065
+STEPX_LO                          00000067
+STEPX_MD                          00000066
+STEP_DELAY                        00000329
+STEP_X_DOM                        000002C3
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 32
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+STEP_Y_DOM                        000002EB
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMP2H                             0000006D
+TMP2L                             0000006E
+TMP3                              0000006F
+TMPH                              0000006B
+TMPL                              0000006C
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 33
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+X0                                00000043
+X1                                00000042
+X2                                00000041
+X3                                00000040
+X4                                0000003F
+X5                                0000003E
+XCUR_HI                           00000056
+XCUR_LO                           00000058
+XCUR_MD                           00000057
+XDIR_F                            00000068
+XD_CLEAR                          000002E5
+XTGT_HI                           00000050
+XTGT_LO                           00000052
+XTGT_MD                           00000051
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 34
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+X_DIR                             PORTB,1
+X_IS_POSITIVE                     0000026B
+X_NEGATE_DONE                     00000268
+X_STEP                            PORTB,0
+Y0                                00000049
+Y1                                00000048
+Y2                                00000047
+Y3                                00000046
+Y4                                00000045
+Y5                                00000044
+YCUR_HI                           00000059
+YCUR_LO                           0000005B
+YCUR_MD                           0000005A
+YDIR_F                            00000069
+YD_CLEAR                          0000030D
+YTGT_HI                           00000053
+YTGT_LO                           00000055
+YTGT_MD                           00000054
+Y_DIR                             PORTB,3
+Y_IS_POSITIVE                     00000289
+Y_NEGATE_DONE                     00000286
+Y_STEP                            PORTB,2
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00001FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+MPASM  5.50                         TEST1.ASM   4-14-2026  7:44:24         PAGE 35
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0240 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0280 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+02C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0300 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0340 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0380 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   954
+Program Memory Words Free:  7238
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     9 reported,     0 suppressed
+
+

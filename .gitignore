@@ -1,4 +1,20 @@
-# Python
+# ============================================================
+#  PCB_ETCHER — repo-wide ignore
+# ============================================================
+
+# ---- Secrets / credentials (NEVER commit) ------------------
+esp32_firmware_v8_1/secrets.h
+secrets.h
+*.secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+credentials.json
+
+# ---- Python ------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
@@ -18,27 +34,34 @@ venv/
 env/
 ENV/
 
-# Environment / secrets
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-secrets.json
-credentials.json
+# ---- Arduino / ESP32 build artifacts -----------------------
+*.elf
+*.bin.tmp
+*.map
+build/
+.pio/
+.pioenvs/
+.piolibdeps/
 
-# IDE / editor
+# ---- IDE / editor ------------------------------------------
 .vscode/
 .idea/
+.qodo/
+.claude/
 *.swp
 *.swo
 *~
 
-# OS
+# ---- OS ----------------------------------------------------
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Logs / runtime
+# ---- Logs / runtime ----------------------------------------
 *.log
 *.pid
+
+# ---- Proteus simulation backups (keep main .pdsprj) --------
+# Uncomment if you want to ignore Proteus autosaves:
+# *[Autosaved]*.pdsprj
+# *.pdsprj.* .workspace
