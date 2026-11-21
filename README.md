@@ -39,19 +39,7 @@ A 2 axis plotter that draws PCB traces as etch resist. A PIC16F877A written in p
 
 Three pieces. Each one does a single job.
 
-```mermaid
-flowchart LR
-    A[Browser<br/>upload .gbr] -->|chunked POST| B[ESP32<br/>web server]
-    B -->|POST /convert| C[Cloud service<br/>Flask in Docker]
-    C -->|job ticket<br/>job_id, total_cmds| B
-    B -->|GET /fetch 4 KB slices| C
-    B -->|14 byte frames<br/>UART 9600| D[PIC16F877A<br/>assembly]
-    D -->|ACK or R| B
-    D --> E[X and Y steppers]
-    B --> F[Pen lift servo]
-    D --> G[16x2 LCD]
-    B -->|DELETE /job| C
-```
+![System diagram](docs/images/flow-diagram.png)
 
 1. **You upload** a Gerber file from the page the ESP32 serves on your network.
 2. **The cloud service** parses the Gerber, fills pads, mirrors the board for toner transfer, and writes a list of moves to a temp file. It returns a small job ticket.
@@ -139,19 +127,7 @@ END
 
 On the wire the ESP32 sends `I` + 6 + 6 + 1 = **14 bytes** plus LF, in one `write()`.
 
-```mermaid
-sequenceDiagram
-    participant E as ESP32
-    participant P as PIC
-    E->>P: I0002500012501 + LF
-    P-->>E: A (ack)
-    E->>P: next frame
-    P-->>E: R (bad frame)
-    E->>P: same frame again
-    P-->>E: A (ack)
-    E->>P: END + LF
-    Note over P: LCD shows PLOT DONE
-```
+![ESP32 and PIC handshake](docs/images/seq-diagram.png)
 
 Cloud API:
 
